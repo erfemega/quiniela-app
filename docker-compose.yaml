@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  mongodb:
+    container_name: mongo-service
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=test
+      - MONGO_INITDB_ROOT_PASSWORD=test
+    volumes:
+      - mongo_db_data:/data/db
+    networks:
+      - quiniela-network
+  backend_services:
+    build: .
+    container_name: quiniela-api
+    ports:
+      - "3001:3000"
+    command: npm run start:dev
+    env_file:
+      - .env
+    volumes:
+      - ".:/usr/src"
+      - "/usr/src/node_modules"
+    depends_on:
+      - mongodb
+    networks:
+      - quiniela-network
+
+volumes:
+  mongo_db_data:
+networks:
+  quiniela-network:
+    driver: bridge

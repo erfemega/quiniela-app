@@ -6,11 +6,14 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateEventDto, UpdateEventDto } from './dtos/createEvent.dto';
 import { EventsService } from './events.service';
 import { CreateMatchDto } from 'src/matches/dtos/createMatch.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { IsOwnerGuard } from 'src/auth/guards/isOwner.guard';
 
 @ApiTags('Events')
 @Controller('events')
@@ -18,6 +21,7 @@ export class EventsController {
   constructor(private eventsService: EventsService) {}
 
   @Get()
+  @ApiBearerAuth()
   async getAllEvents() {
     const events = await this.eventsService.getEvents();
     return events;
