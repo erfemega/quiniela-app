@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto } from './dtos/CreateUser.dto';
@@ -13,19 +19,29 @@ export class UsersService {
   ) {}
 
   async addUser(createUserDto: CreateUserDto): Promise<User> {
-    const newUser = await this.userModel.create({
-      ...createUserDto,
-      roles: Role.User,
-    });
-    newUser.password = await bcrypt.hash(newUser.password, 10);
-    return newUser.save();
+    try {
+      const newUser = await this.userModel.create({
+        ...createUserDto,
+        roles: Role.User,
+      });
+      newUser.password = await bcrypt.hash(newUser.password, 10);
+      return newUser.save();
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new BadRequestException('El usuario ya existe');
+      }
+      throw new HttpException('Error al crear usuario', HttpStatus.BAD_REQUEST);
+    }
   }
 
-  async findUser(username: string): Promise<User> {
-    const user = await this.userModel.findOne({ username });
+  async findUser(query: object, safe = true): Promise<any> {
+    const user = await await this.userModel.findOne(query);
+    delete user.password;
     if (!user) {
       throw new UnauthorizedException('Provided credentials are wrong');
     }
-    return user;
+    const safeUser = user.toObject();
+    delete safeUser.password;
+    return safe ? safeUser : user;
   }
 }

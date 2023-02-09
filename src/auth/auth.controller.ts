@@ -9,13 +9,13 @@ import {
 import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
-import { LocalAuthGuard } from './guards/local.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { Role } from './enums/role.enum';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { UserLoginDto } from './dtos/UserLogin.dto';
+import { LocalAuthGuard } from './guards/local.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -39,15 +39,16 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.User)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/user')
   getProfile(@Request() req) {
     return req.user;
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/admin')
   getDashBoard(@Request() req) {
     return req.user;
