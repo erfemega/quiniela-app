@@ -13,7 +13,7 @@ import { JwtAuthGuard } from './guards/jwt.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
 import { Role } from './enums/role.enum';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserLoginDto } from './dtos/UserLogin.dto';
 import { LocalAuthGuard } from './guards/local.guard';
 
@@ -39,6 +39,9 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get the current user profile',
+  })
   @Roles(Role.User)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/user')
@@ -47,6 +50,10 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get the admin dashboard info',
+    description: 'Current user must have the admin role assigned',
+  })
   @Roles(Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('/admin')

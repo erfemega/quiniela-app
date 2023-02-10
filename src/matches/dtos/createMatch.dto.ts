@@ -28,7 +28,7 @@ export class CreateMatchDto {
   winner: Contender;
 
   @IsOptional()
-  eventId: string;
+  event: string;
 }
 
 export class UpdateMatchDto extends PartialType(CreateMatchDto) {}

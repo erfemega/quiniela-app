@@ -16,10 +16,10 @@ export class Match {
   contenders: Contender[];
 
   @Prop({ type: ContenderSchema, defaultValue: null })
-  winner: Contender & null;
+  winner: Contender | null;
 
   @Prop({ type: Types.ObjectId, ref: 'Event' })
-  eventId: string;
+  event: string;
 }
 
 export const MatchSchema = SchemaFactory.createForClass(Match);
