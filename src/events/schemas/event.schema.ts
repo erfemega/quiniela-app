@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Type } from 'class-transformer';
 import { Document, Types } from 'mongoose';
 import { Match } from 'src/matches/schemas/match.schema';
+import { User } from 'src/users/schemas/user.schema';
 
 export type EventDocument = Event & Document;
 
@@ -15,6 +15,12 @@ export class Event {
 
   @Prop({ type: [Types.ObjectId], ref: 'Match' })
   matches: Match[];
+
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  owners: User[];
+
+  @Prop({ default: false })
+  published: boolean;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);

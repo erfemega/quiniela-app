@@ -24,8 +24,11 @@ export class MatchesService {
     return match.save();
   }
 
-  async getMatchById(matchId): Promise<Match> {
-    const match = await this.matchModel.findById(matchId).exec();
+  async getMatchById(matchId, populated = []): Promise<Match> {
+    const match = await this.matchModel
+      .findById(matchId)
+      .populate(populated)
+      .exec();
     if (!match) throw new MatchNotFoundException(matchId);
     return match;
   }
@@ -43,9 +46,20 @@ export class MatchesService {
     return updatedMatch;
   }
 
+  async addMatchResult(matchId: string, contenderId: string) {
+    const match = await this.getMatchById(matchId);
+    const contenders: any = match.contenders;
+    const contender = contenders.find(
+      (contender) => contender._id == contenderId,
+    );
+    const updatedMatch = await this.updateMatch(matchId, {
+      winner: contender,
+    });
+    return updatedMatch;
+  }
+
   async deleteAllMatchesFromEvent(eventId: string) {
-    const matches = await this.matchModel.find({ eventId: eventId });
-    console.log(matches);
+    // const matches = await this.matchModel.find({ eventId: eventId });
     const deletedMatches = this.matchModel.deleteMany({ eventId });
     return deletedMatches;
   }
