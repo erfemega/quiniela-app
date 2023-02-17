@@ -13,7 +13,7 @@ export class User {
   email: string;
 
   @Prop()
-  password: string;
+  picture: string;
 
   @Prop()
   roles: Role[];

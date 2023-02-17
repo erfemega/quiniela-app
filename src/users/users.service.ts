@@ -11,6 +11,7 @@ import { CreateUserDto } from './dtos/CreateUser.dto';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { Role } from 'src/auth/enums/role.enum';
+import axios from 'axios';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +25,6 @@ export class UsersService {
         ...createUserDto,
         roles: Role.User,
       });
-      newUser.password = await bcrypt.hash(newUser.password, 10);
       return newUser.save();
     } catch (error) {
       if (error.code === 11000) {
@@ -37,11 +37,8 @@ export class UsersService {
   async findUser(query: object, safe = true): Promise<any> {
     const user = await await this.userModel.findOne(query);
     if (!user) {
-      throw new UnauthorizedException('Provided credentials are wrong');
+      return null;
     }
-    delete user.password;
-    const safeUser = user.toObject();
-    delete safeUser.password;
-    return safe ? safeUser : user;
+    return user;
   }
 }

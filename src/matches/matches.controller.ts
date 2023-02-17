@@ -12,9 +12,9 @@ import {
 import { MatchesService } from './matches.service';
 import { UpdateMatchDto } from './dtos/createMatch.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { MatchOwnerGuard } from './guards/MatchOwner.guard';
 import { AddMatchResult } from './dtos/addMatchResult.dto';
+import { Auth0Guard } from 'src/auth/guards/auth0.guard';
 
 @ApiBearerAuth()
 @ApiTags('Matches')
@@ -25,7 +25,7 @@ export class MatchesController {
   @ApiOperation({
     summary: 'Get match by id',
   })
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(Auth0Guard)
   @Get(':matchId')
   async getMatch(@Param('matchId') matchId: string) {
     const match = await this.matchesService.getMatchById(matchId);
@@ -36,7 +36,7 @@ export class MatchesController {
     summary: 'Update a match',
     description: 'Current user must be owner of the parent event',
   })
-  @UseGuards(JwtAuthGuard, MatchOwnerGuard)
+  @UseGuards(Auth0Guard, MatchOwnerGuard)
   @Patch(':matchId')
   async updateMatch(
     @Request() req,
@@ -61,7 +61,7 @@ export class MatchesController {
     summary: 'Set the winner of the match',
     description: 'Current user must be owner of the parent event',
   })
-  @UseGuards(JwtAuthGuard, MatchOwnerGuard)
+  @UseGuards(Auth0Guard, MatchOwnerGuard)
   @Post(':matchId/result')
   async addResult(
     @Param('matchId') matchId: string,
