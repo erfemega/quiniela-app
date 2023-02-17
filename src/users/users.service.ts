@@ -36,10 +36,10 @@ export class UsersService {
 
   async findUser(query: object, safe = true): Promise<any> {
     const user = await await this.userModel.findOne(query);
-    delete user.password;
     if (!user) {
       throw new UnauthorizedException('Provided credentials are wrong');
     }
+    delete user.password;
     const safeUser = user.toObject();
     delete safeUser.password;
     return safe ? safeUser : user;

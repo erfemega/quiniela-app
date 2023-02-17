@@ -19,6 +19,8 @@ import { EventOwnerGuard } from './guards/EventOwner.guard';
 import { AddOwnerDto } from './dtos/addOwner.dto';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
+import { Auth0Guard } from 'src/auth/guards/auth0.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiBearerAuth()
 @ApiTags('Events')
@@ -55,8 +57,9 @@ export class EventsController {
     summary: 'Get all published events',
     description: 'Get published events',
   })
-  @Roles(Role.User)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles(Role.User)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(Auth0Guard)
   @Get('public')
   async getPublishedEvents() {
     const events = await this.eventsService.getPublicEvents();
