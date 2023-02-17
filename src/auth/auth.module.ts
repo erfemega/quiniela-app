@@ -11,7 +11,7 @@ import { Auth0Strategy } from './strategies/auth0.strategy';
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'auth0' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '180s' },
