@@ -74,4 +74,15 @@ export class MatchesController {
     );
     return updatedMatch;
   }
+
+  @ApiOperation({
+    summary: 'Reset a result from match',
+    description: 'Current user must be owner of the parent event',
+  })
+  @UseGuards(Auth0Guard, MatchOwnerGuard)
+  @Post(':matchId/result/reset')
+  async resetMatchResult(@Param('matchId') matchId: string) {
+    const updatedMatch = await this.matchesService.resetMatchResult(matchId);
+    return updatedMatch;
+  }
 }

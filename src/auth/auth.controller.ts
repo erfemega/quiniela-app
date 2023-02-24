@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Request,
   UseGuards,
@@ -13,11 +14,6 @@ import { Roles } from './decorators/roles.decorator';
 import { Role } from './enums/role.enum';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth0Guard } from './guards/auth0.guard';
-// It can be used in case of you want to use the local strategy with jwt
-// import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
-// import { JwtAuthGuard } from './guards/jwt.guard';
-// import { UserLoginDto } from './dtos/UserLogin.dto';
-// import { LocalAuthGuard } from './guards/local.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -47,8 +43,9 @@ export class AuthController {
   @Roles(Role.User)
   @UseGuards(Auth0Guard, RolesGuard)
   @Get('/user')
-  getProfile(@Request() req) {
-    return req.user;
+  async getProfile(@Request() req) {
+    const user = await this.userService.findUser({ _id: req.user._id });
+    return user;
   }
 
   @ApiBearerAuth()
