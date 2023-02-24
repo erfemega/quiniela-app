@@ -149,6 +149,13 @@ export class EventsController {
     return updatedEvent;
   }
 
+  @UseGuards(Auth0Guard)
+  @Post(':eventId/subscribe')
+  async subscribeToEvent(@Param('eventId') eventId: string, @Request() req) {
+    const user = req.user;
+    return this.eventsService.subscribeUser(eventId, user);
+  }
+
   @ApiOperation({
     summary: 'Delete event',
     description: 'Current user must be owner',

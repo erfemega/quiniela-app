@@ -7,6 +7,7 @@ import { MatchesModule } from './matches/matches.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { PredictionsModule } from './predictions/predictions.module';
+import { RankingsModule } from './rankings/rankings.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PredictionsModule } from './predictions/predictions.module';
     UsersModule,
     AuthModule,
     PredictionsModule,
+    RankingsModule,
   ],
   controllers: [],
   providers: [],

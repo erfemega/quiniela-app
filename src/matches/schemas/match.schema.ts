@@ -2,8 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import {
   Contender,
+  ContenderDocument,
   ContenderSchema,
 } from '../contenders/schemas/contender.schema';
+import { Prediction } from 'src/predictions/schemas/prediction.schema';
 
 export type MatchDocument = Match & Document;
 
@@ -13,10 +15,10 @@ export class Match {
   title: string;
 
   @Prop({ type: [ContenderSchema], defaultValue: [] })
-  contenders: Contender[];
+  contenders: ContenderDocument[];
 
   @Prop({ type: ContenderSchema, defaultValue: null })
-  winner: Contender | null;
+  winner: ContenderDocument | null;
 
   @Prop({ type: Types.ObjectId, ref: 'Event' })
   event: string;
