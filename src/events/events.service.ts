@@ -22,17 +22,17 @@ export class EventsService {
     private rankingsService: RankingsService,
   ) {}
 
-  async getEvents(): Promise<Event[]> {
-    const events = await this.eventModel.find().exec();
+  async getEvents(query = {}): Promise<EventDocument[]> {
+    const events = await this.eventModel.find(query).exec();
     return events;
   }
 
-  async getPublicEvents(): Promise<Event[]> {
+  async getPublicEvents(): Promise<EventDocument[]> {
     const events = await this.eventModel.find({ published: true }).exec();
     return events;
   }
 
-  async getEventsByOwner(owner: string): Promise<Event[]> {
+  async getEventsByOwner(owner: string): Promise<EventDocument[]> {
     const events = await this.eventModel
       .find({ owners: { $in: [owner] } })
       .exec();
