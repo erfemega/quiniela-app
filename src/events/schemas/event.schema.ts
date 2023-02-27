@@ -21,6 +21,9 @@ export class Event {
 
   @Prop({ default: false })
   published: boolean;
+
+  @Prop({ default: false })
+  default: boolean;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);
