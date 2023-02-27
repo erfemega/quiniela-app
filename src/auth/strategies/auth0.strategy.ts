@@ -6,12 +6,14 @@ import { PassportStrategy } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
 import { AuthService } from '../auth.service';
 import { Role } from '../enums/role.enum';
+import { EventsService } from 'src/events/events.service';
 
 @Injectable()
 export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
   constructor(
     private userService: UsersService,
     private authService: AuthService,
+    private eventsService: EventsService,
   ) {
     super({
       secretOrKeyProvider: passportJwtSecret({
@@ -29,6 +31,20 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
     });
   }
 
+  async subscribeUserToDefaultEvent(user) {
+    const [defaultEvent] = await this.eventsService.getEvents({
+      default: true,
+    });
+    if (!defaultEvent) {
+      return;
+    }
+    try {
+      await this.eventsService.subscribeUser(defaultEvent._id, user);
+    } catch (error) {
+      return;
+    }
+  }
+
   async validate(request, payload) {
     let user = await this.userService.findUser({ email: payload.email });
     if (!user) {
@@ -42,6 +58,7 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
       };
       user = await this.userService.addUser(newUser);
     }
+    await this.subscribeUserToDefaultEvent(user);
     return user;
   }
 }

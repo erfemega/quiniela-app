@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { Auth0Strategy } from './strategies/auth0.strategy';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { Auth0Strategy } from './strategies/auth0.strategy';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '180s' },
     }),
+    EventsModule,
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, Auth0Strategy],
   controllers: [AuthController],
