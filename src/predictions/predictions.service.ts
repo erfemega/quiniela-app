@@ -42,8 +42,14 @@ export class PredictionsService {
     return predictions;
   }
 
-  async getPrediction(predictionId: string): Promise<PredictionDocument> {
-    const prediction = this.predictionModel.findById(predictionId).exec();
+  async getPrediction(
+    predictionId: string,
+    populate = [],
+  ): Promise<PredictionDocument> {
+    const prediction = await this.predictionModel
+      .findById(predictionId)
+      .populate(populate)
+      .exec();
     return prediction;
   }
 

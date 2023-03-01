@@ -11,6 +11,7 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Auth0Guard } from 'src/auth/guards/auth0.guard';
 import { PredictionsService } from './predictions.service';
 import { AddMatchResult } from 'src/matches/dtos/addMatchResult.dto';
+import { PredictionSettableGuard } from './guards/PredictionSettable.guard';
 
 @ApiTags('Predictions')
 @ApiBearerAuth()
@@ -28,7 +29,7 @@ export class PredictionsController {
     return predictions;
   }
 
-  @UseGuards(Auth0Guard)
+  @UseGuards(Auth0Guard, PredictionSettableGuard)
   @Patch(':predictionId')
   async setPredictionResult(
     @Param('predictionId') predictionId: string,

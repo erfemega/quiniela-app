@@ -24,6 +24,9 @@ export class Event {
 
   @Prop({ default: false })
   default: boolean;
+
+  @Prop()
+  finishDate: string;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);
