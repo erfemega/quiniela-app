@@ -166,4 +166,15 @@ export class EventsController {
     const event = await this.eventsService.deleteEvent(eventId);
     return event;
   }
+
+  @ApiOperation({
+    summary: 'admin an event',
+    description: 'Return the event if the user is owner'
+  })
+  @UseGuards(Auth0Guard, EventOwnerGuard)
+  @Get(':eventId/admin')
+  async getOwnedEvent(@Param('eventId') eventId: string) {
+    const event = this.eventsService.getEvent(eventId);
+    return event;
+  }
 }
