@@ -169,7 +169,7 @@ export class EventsController {
 
   @ApiOperation({
     summary: 'admin an event',
-    description: 'Return the event if the user is owner'
+    description: 'Return the event if the user is owner',
   })
   @UseGuards(Auth0Guard, EventOwnerGuard)
   @Get(':eventId/admin')

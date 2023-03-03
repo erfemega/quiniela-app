@@ -49,6 +49,7 @@ export class RankingsService {
       .find({
         event: new Types.ObjectId(eventId),
       })
+      .populate(['owner'])
       .sort({ points: -1 })
       .exec();
     return rankings;
