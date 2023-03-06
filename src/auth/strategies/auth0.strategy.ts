@@ -7,6 +7,7 @@ import { UsersService } from 'src/users/users.service';
 import { AuthService } from '../auth.service';
 import { Role } from '../enums/role.enum';
 import { EventsService } from 'src/events/events.service';
+import { getUserIdFromEmail } from 'src/utils/userUtils';
 
 @Injectable()
 export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
@@ -32,12 +33,14 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
   }
 
   async validate(request, payload) {
-    let user = await this.userService.findUser({ email: payload.email });
+    let user = await this.userService.findUser({
+      email: getUserIdFromEmail(payload.email),
+    });
     if (!user) {
       const token = request.headers.authorization.split(' ')[1];
       const userData = await this.authService.getUserDataFromProvider(token);
       const newUser = {
-        email: userData.data.email,
+        email: getUserIdFromEmail(userData.data.email),
         name: `${userData.data.name}`,
         roles: [Role.User],
         picture: userData.data.picture,
