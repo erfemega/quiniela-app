@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
-import { CreateUserDto } from './dtos/CreateUser.dto';
-import * as bcrypt from 'bcrypt';
+import { CreateUserDto, UpdateUserDto } from './dtos/CreateUser.dto';
 import { Model } from 'mongoose';
+import { Role } from 'src/auth/enums/role.enum';
 
 @Injectable()
 export class UsersService {
@@ -12,13 +17,47 @@ export class UsersService {
   ) {}
 
   async addUser(createUserDto: CreateUserDto): Promise<User> {
-    const newUser = await this.userModel.create(createUserDto);
-    newUser.password = await bcrypt.hash(newUser.password, 10);
-    return newUser.save();
+    try {
+      const newUser = await this.userModel.create({
+        ...createUserDto,
+        roles: Role.User,
+      });
+      return newUser.save();
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new BadRequestException('El usuario ya existe');
+      }
+      throw new HttpException('Error al crear usuario', HttpStatus.BAD_REQUEST);
+    }
   }
 
-  async findUser(username: string): Promise<User> {
-    const user = await this.userModel.findOne({ username });
+  async findUser(query: object): Promise<any> {
+    const user = await await this.userModel.findOne(query);
+    if (!user) {
+      return null;
+    }
     return user;
+  }
+
+  async updateUser(
+    userId: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      userId,
+      updateUserDto,
+    );
+    return updatedUser;
+  }
+
+  async addEvent(userId: string, event) {
+    const user = await this.findUser({ _id: userId });
+    if (user.events) {
+      user.events = [...user.events, event._id];
+    } else {
+      user.events = [event._id];
+    }
+    const updatedUser = await this.updateUser(user._id, user);
+    return updatedUser;
   }
 }

@@ -1,11 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  username: string;
+  name: string;
 
   @IsString()
   @IsNotEmpty()
@@ -14,9 +14,10 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
-  @IsNotEmpty()
-  @MinLength(8)
   @ApiProperty()
-  password: string;
-  // roles: string[];
+  picture: string;
+
+  roles: string[];
 }
+
+export class UpdateUserDto extends PartialType(CreateUserDto) {}
