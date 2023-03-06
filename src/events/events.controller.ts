@@ -94,11 +94,11 @@ export class EventsController {
   async addMatchToEvent(
     @Request() req,
     @Param('eventId') eventId: string,
-    @Body() createMatchDto: CreateMatchDto,
+    @Body() createMatchDtos: CreateMatchDto[],
   ) {
-    const eventWithMatch = await this.eventsService.addMatchToEvent(
+    const eventWithMatch = await this.eventsService.addMatchesToEvent(
       eventId,
-      createMatchDto,
+      createMatchDtos,
     );
     return eventWithMatch;
   }
@@ -153,7 +153,8 @@ export class EventsController {
   @Post(':eventId/subscribe')
   async subscribeToEvent(@Param('eventId') eventId: string, @Request() req) {
     const user = req.user;
-    return this.eventsService.subscribeUser(eventId, user);
+    const event = await this.eventsService.getEvent(eventId);
+    return this.eventsService.subscribeUser(event, user);
   }
 
   @ApiOperation({

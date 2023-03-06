@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Event, EventDocument } from './schemas/event.schema';
 import { Model } from 'mongoose';
@@ -59,16 +64,21 @@ export class EventsService {
     return newEvent.save();
   }
 
-  async addMatchToEvent(
+  async addMatchesToEvent(
     eventId: string,
-    createMatchDto: CreateMatchDto,
+    createMatchDtos: CreateMatchDto[],
   ): Promise<EventDocument> {
     const event = await this.getEvent(eventId);
-    const match = await this.matchesService.addMatch({
-      ...createMatchDto,
-      event: eventId,
-    });
-    event.matches.push(match);
+    const createdMatches = await Promise.all(
+      createMatchDtos.map(async (matchDto) => {
+        const match = await this.matchesService.addMatch({
+          ...matchDto,
+          event: eventId,
+        });
+        return match;
+      }),
+    );
+    event.matches = createdMatches;
     const updatedEvent = await this.updateEvent(eventId, event);
     return updatedEvent;
   }
@@ -104,14 +114,17 @@ export class EventsService {
     return updatedEvent;
   }
 
-  async subscribeUser(eventId: string, user: UserDocument) {
+  async subscribeUser(event: EventDocument, user: UserDocument) {
     const isAlreadySubscribed = user.events.some(
-      (event) => event.toString() == eventId,
+      (eventItem) => eventItem == event._id.toString(),
     );
-    if (isAlreadySubscribed) {
-      throw new HttpException('User is already subscribed', HttpStatus.OK);
+    const eventIsPublished = event.published;
+    if (isAlreadySubscribed || !eventIsPublished) {
+      throw new BadRequestException(
+        'User is already registered or event is not published',
+      );
     }
-    const event = await this.getEvent(eventId);
+    // const event = await this.getEvent(eventId);
     const matches = event.matches.map((match) => match._id);
     matches.forEach(async (match) => {
       const newPrediction = await this.predictionsService.addPrediction({
