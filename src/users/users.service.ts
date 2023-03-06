@@ -9,6 +9,7 @@ import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto, UpdateUserDto } from './dtos/CreateUser.dto';
 import { Model } from 'mongoose';
 import { Role } from 'src/auth/enums/role.enum';
+import { getUserIdFromEmail } from 'src/utils/userUtils';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +25,7 @@ export class UsersService {
       });
       return newUser.save();
     } catch (error) {
+      console.log(error.message);
       if (error.code === 11000) {
         throw new BadRequestException('El usuario ya existe');
       }
@@ -31,7 +33,7 @@ export class UsersService {
     }
   }
 
-  async findUser(query: object): Promise<any> {
+  async findUser(query: any): Promise<any> {
     const user = await await this.userModel.findOne(query);
     if (!user) {
       return null;
